@@ -1,7 +1,9 @@
 /* eslint-env node */
 
-
 const { configure, } = require('quasar/wrappers');
+
+process.env.VITE_BUILD_TIME = Date.now().toString();
+process.env.VITE_VERSION = process.env.NPM_PACKAGE_VERSION;
 
 module.exports = configure((/* ctx */) => {
   return {
