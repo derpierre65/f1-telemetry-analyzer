@@ -7,7 +7,7 @@ process.env.VITE_VERSION = process.env.NPM_PACKAGE_VERSION;
 
 module.exports = configure((/* ctx */) => {
   return {
-    boot: [],
+    boot: [ 'i18next', ],
     css: [ 'app.scss', ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
