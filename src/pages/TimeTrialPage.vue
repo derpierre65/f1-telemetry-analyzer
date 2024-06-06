@@ -4,7 +4,7 @@
       <div class="tw-flex-auto">
         <q-table
           :rows="laps"
-          :rows-per-page-options
+          :rows-per-page-options="rowsPerPageOptions"
           :columns
           class="tw-w-full"
           flat
@@ -40,8 +40,10 @@
 import { computed, ref } from 'vue';
 import { type QTableProps, useQuasar } from 'quasar';
 import { formatTimestamp } from 'src/utils/type-helpers/math';
-import type { LapHistoryData } from '@racehub-io/f1-telemetry-client/build/main/parsers/packets/types';
+import type { LapHistoryData, PacketSessionHistoryData } from '@racehub-io/f1-telemetry-client/build/main/parsers/packets/types';
 import { useTranslation } from 'i18next-vue';
+import { useTelemetryClient } from 'src/composables/telemetry-client';
+import { PACKETS } from '@racehub-io/f1-telemetry-client/build/main/constants';
 defineOptions({
   name: 'IndexPage',
 });
@@ -49,6 +51,9 @@ defineOptions({
 //#region Composable & Prepare
 const q = useQuasar();
 const { t, } = useTranslation();
+useTelemetryClient({
+  [PACKETS.sessionHistory]: onSessionHistory,
+});
 //#endregion
 
 //#region Data
@@ -128,6 +133,29 @@ const averageLapTime = computed(() => {
 //#endregion
 
 //#region Methods
+function onSessionHistory(data: PacketSessionHistoryData) {
+  if (data.m_carIdx !== 0) {
+    return;
+  }
+
+  const newLaps = [];
+  let lapId = 1;
+  // TODO need to check if someone drives more than 100 rounds in one session
+  for (const lapInfo of data.m_lapHistoryData) {
+    if (lapInfo.m_lapTimeInMS > 0) {
+      newLaps.push({
+        lap: lapId,
+        ...lapInfo,
+      });
+      lapId++;
+    }
+  }
+
+  laps.value = newLaps;
+
+  console.log('onSessionHistory', data);
+}
+
 function getBestTime(key: keyof LapHistoryData) {
   return (previous: number, lap: LapHistoryData): number => {
     if (lap[key] === 0) {
