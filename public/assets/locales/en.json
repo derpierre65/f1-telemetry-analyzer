@@ -1,2 +1,22 @@
 {
+  "global": {
+    "load": "Load",
+    "save": "Save"
+  },
+  "menu": {
+    "time_trial": "Time Trial"
+  },
+  "time_trial": {
+    "import_success": "File loaded.",
+    "import_invalid": "Invalid file selected.",
+    "stats": {
+      "best_lap_time": "Best Lap Time",
+      "average_time": "Average Lap Time",
+      "possible_best_time": "Possible Best Time"
+    },
+    "columns": {
+      "lap": "Lap",
+      "lap_time": "Lap time"
+    }
+  }
 }

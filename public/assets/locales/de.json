@@ -1,2 +1,22 @@
 {
+  "global": {
+    "load": "Laden",
+    "save": "Speichern"
+  },
+  "menu": {
+    "time_trial": "Zeitfahren"
+  },
+  "time_trial": {
+    "import_success": "Datei wurde geladen.",
+    "import_invalid": "Ungültige Datei ausgewählt.",
+    "stats": {
+      "best_lap_time": "Beste Rundenzeit",
+      "average_time": "Durchschnittliche Rundenzeit",
+      "possible_best_time": "Mögliche Bestzeit"
+    },
+    "columns": {
+      "lap": "Runde",
+      "lap_time": "Rundenzeit"
+    }
+  }
 }

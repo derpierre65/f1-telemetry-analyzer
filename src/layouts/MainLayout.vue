@@ -8,6 +8,9 @@
 
         <div>v{{ version }}</div>
       </q-toolbar>
+      <q-tabs align="left">
+        <q-route-tab :label="$t('menu.time_trial')" :to="{name: 'time-trial'}" />
+      </q-tabs>
     </q-header>
 
     <q-page-container>
