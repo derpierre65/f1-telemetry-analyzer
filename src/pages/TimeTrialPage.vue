@@ -80,34 +80,29 @@ const columns = computed(() => {
     {
       label: 'S1',
       name: 'm_sector1TimeInMS',
-      classes: (lap) => {
-        return lap.m_sector1TimeInMS === bestSector1.value ? '!tw-bg-purple-500' : '';
-      },
-      field: (lap) => formatTimestamp(lap.m_sector1TimeInMS),
+      classes: (lap: LapHistoryData) => (lap.m_sector1TimeInMS === bestSector1.value ? '!tw-bg-purple-500' : ''),
+      field: (lap: LapHistoryData) => formatTimestamp(lap.m_sector1TimeInMS),
       sortable: true,
     },
     {
       label: 'S2',
       name: 'm_sector2TimeInMS',
-      classes: (lap) => {
-        return lap.m_sector2TimeInMS === bestSector2.value ? '!tw-bg-purple-500' : '';
-      },
-      field: (lap) => formatTimestamp(lap.m_sector2TimeInMS),
+      classes: (lap: LapHistoryData) => (lap.m_sector2TimeInMS === bestSector2.value ? '!tw-bg-purple-500' : ''),
+      field: (lap: LapHistoryData) => formatTimestamp(lap.m_sector2TimeInMS),
       sortable: true,
     },
     {
       label: 'S3',
       name: 'm_sector3TimeInMS',
-      classes: (lap) => {
-        return lap.m_sector3TimeInMS === bestSector3.value ? '!tw-bg-purple-500' : '';
-      },
-      field: (lap) => formatTimestamp(lap.m_sector3TimeInMS),
+      classes: (lap: LapHistoryData) => (lap.m_sector3TimeInMS === bestSector3.value ? '!tw-bg-purple-500' : ''),
+      field: (lap: LapHistoryData) => formatTimestamp(lap.m_sector3TimeInMS),
       sortable: true,
     },
     {
       label: t('time_trial.columns.lap_time'),
       name: 'm_lapTimeInMS',
-      field: (lap) => formatTimestamp(lap.m_lapTimeInMS),
+      classes: (lap: LapHistoryData) => (lap.m_lapTimeInMS === bestLapTime.value ? '!tw-bg-purple-500' : ''),
+      field: (lap: LapHistoryData) => formatTimestamp(lap.m_lapTimeInMS),
       sortable: true,
     },
   ] as QTableProps['columns'];
