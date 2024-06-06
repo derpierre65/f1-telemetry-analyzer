@@ -41,18 +41,18 @@ function startF1Client() {
       port: config.telemetryPort,
     });
 
-    // f1Client.on(PACKETS.motion, (data) => socket.emit('emit', PACKETS.motion, data));
-    f1Client.on(PACKETS.session, (data) => io.emit(PACKETS.session, data));
-    f1Client.on(PACKETS.lapData, (data) => io.emit(PACKETS.lapData, data));
-    f1Client.on(PACKETS.event, (data) => io.emit(PACKETS.event, data));
-    f1Client.on(PACKETS.participants, (data) => io.emit(PACKETS.participants, data));
-    // f1Client.on(PACKETS.carSetups, (data) => socket.emit('emit', PACKETS.carSetups, data));
-    // f1Client.on(PACKETS.carTelemetry, (data) => socket.emit('emit', PACKETS.carTelemetry, data));
-    // f1Client.on(PACKETS.carStatus, (data) => socket.emit('emit', PACKETS.carStatus, data));
-    // f1Client.on(PACKETS.finalClassification, (data) => socket.emit('emit', PACKETS.finalClassification, data));
-    f1Client.on(PACKETS.lobbyInfo, (data) => io.emit(PACKETS.lobbyInfo, data));
-    f1Client.on(PACKETS.sessionHistory, (data) => io.emit(PACKETS.sessionHistory, data));
-    f1Client.on(PACKETS.carDamage, (data) => io.emit(PACKETS.carDamage, data));
+    f1Client.on(PACKETS.motion, (data) => emitEvent(PACKETS.motion, data));
+    f1Client.on(PACKETS.session, (data) => emitEvent(PACKETS.session, data));
+    f1Client.on(PACKETS.lapData, (data) => emitEvent(PACKETS.lapData, data));
+    f1Client.on(PACKETS.event, (data) => emitEvent(PACKETS.event, data));
+    f1Client.on(PACKETS.participants, (data) => emitEvent(PACKETS.participants, data));
+    f1Client.on(PACKETS.carSetups, (data) => emitEvent(PACKETS.carSetups, data));
+    f1Client.on(PACKETS.carTelemetry, (data) => emitEvent(PACKETS.carTelemetry, data));
+    f1Client.on(PACKETS.carStatus, (data) => emitEvent(PACKETS.carStatus, data));
+    f1Client.on(PACKETS.finalClassification, (data) => emitEvent(PACKETS.finalClassification, data));
+    f1Client.on(PACKETS.lobbyInfo, (data) => emitEvent(PACKETS.lobbyInfo, data));
+    f1Client.on(PACKETS.sessionHistory, (data) => emitEvent(PACKETS.sessionHistory, data));
+    f1Client.on(PACKETS.carDamage, (data) => emitEvent(PACKETS.carDamage, data));
     f1Client.start();
   }
   catch (error) {
@@ -63,10 +63,66 @@ function startF1Client() {
 
 startF1Client();
 
-io.on('connection', () => {
-  // do something here with the socket.
+const listenToEvents = {};
+
+function emitEvent(eventName, data) {
+  if (typeof listenToEvents[eventName] === 'undefined') {
+    return;
+  }
+
+  io.emit(eventName, data);
+}
+
+function unbindEvent(event, value = 1) {
+  if (typeof listenToEvents[event] === 'undefined') {
+    return;
+  }
+
+  listenToEvents[event] -= value;
+  if (listenToEvents[event] === 0) {
+    delete listenToEvents[event];
+  }
+}
+
+io.on('connection', (socket) => {
+  socket.data.events = {};
+  socket.on('disconnect', () => {
+    for (const event of Object.keys(socket.data.events)) {
+      unbindEvent(event, socket.data.events[event]);
+    }
+  });
+
+  socket.on('listen', (events) => {
+    for (const key of events) {
+      if (typeof socket.data.events[key] === 'undefined') {
+        socket.data.events[key] = 0;
+      }
+      socket.data.events[key]++;
+
+      if (typeof listenToEvents[key] === 'undefined') {
+        listenToEvents[key] = 0;
+      }
+
+      listenToEvents[key]++;
+    }
+  });
+  socket.on('stopListening', (events) => {
+    for (const key of events) {
+      if (typeof socket.data.events[key] === 'undefined') {
+        continue;
+      }
+
+      socket.data.events[key]--;
+
+      if (socket.data.events[key] === 0) {
+        delete socket.data.events[key];
+      }
+
+      unbindEvent(key);
+    }
+  });
 });
 
 httpServer.listen(config.wsPort, '127.0.0.1');
-console.log('F1 Telemetry Analyzer Client v1.0.0');
+console.log('F1 Telemetry Analyzer Client v1.1.0');
 console.log(`WebSocket Server listening on 127.0.0.1:${config.wsPort}`);

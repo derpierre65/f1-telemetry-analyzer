@@ -54,7 +54,13 @@ function useTelemetryClient(packets: { [K in keyof PacketMethods]: PacketMethods
 
   //#region Lifecycle Events
   onMounted(bindEvents);
-  onUnmounted(unbindEvents);
+  onUnmounted(() => {
+    unbindEvents();
+
+    if (socket) {
+      socket.off('connect', bindEvents);
+    }
+  });
   //#endregion
 
   //#region Methods
@@ -63,24 +69,28 @@ function useTelemetryClient(packets: { [K in keyof PacketMethods]: PacketMethods
       return;
     }
 
-    socket.off('connect', bindEvents);
-
-    for (const key of Object.keys(packets)) {
+    const events = Object.keys(packets) as Array<keyof PacketMethods>;
+    for (const key of events) {
       console.debug(`[TelemetryClient] Unbind ${key}`);
       socket.off(key, packets[key]);
     }
+
+    socket.emit('stopListening', events);
   }
   function bindEvents() {
     if (!socketConnected || !socket) {
       return;
     }
 
-    socket.off('connect', bindEvents);
+    unbindEvents();
 
-    for (const key of Object.keys(packets)) {
+    const events = Object.keys(packets) as Array<keyof PacketMethods>;
+    for (const key of events) {
       console.debug(`[TelemetryClient] listen to ${key}`);
       socket?.on(key, packets[key]);
     }
+
+    socket.emit('listen', events);
   }
   //#endregion
 
@@ -89,8 +99,9 @@ function useTelemetryClient(packets: { [K in keyof PacketMethods]: PacketMethods
     socket = io('ws://127.0.0.1:3000'); // TODO add configuration for url/port
     socket.on('connect', () => socketConnected = true);
     socket.on('disconnect', () => socketConnected = false);
-    socket.on('connect', bindEvents);
   }
+
+  socket.on('connect', bindEvents);
   //#endregion
 }
 
