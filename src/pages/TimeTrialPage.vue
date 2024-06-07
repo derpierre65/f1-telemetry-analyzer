@@ -142,7 +142,9 @@ function onSessionHistory(data: PacketSessionHistoryData) {
   let lapId = 1;
   // TODO need to check if someone drives more than 100 rounds in one session
   for (const lapInfo of data.m_lapHistoryData) {
-    if (lapInfo.m_lapTimeInMS > 0) {
+    const lapTime = lapInfo.m_lapTimeInMS;
+    const lapTimeAllSectors = lapInfo.m_sector1TimeInMS + lapInfo.m_sector2TimeInMS + lapInfo.m_sector3TimeInMS;
+    if (lapInfo.m_lapTimeInMS > 0 && Math.abs(lapTime - lapTimeAllSectors) < 500) {
       newLaps.push({
         lap: lapId,
         ...lapInfo,
