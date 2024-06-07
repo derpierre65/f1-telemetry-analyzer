@@ -134,7 +134,7 @@ const averageLapTime = computed(() => {
 
 //#region Methods
 function onSessionHistory(data: PacketSessionHistoryData) {
-  if (data.m_carIdx !== 0) {
+  if (data.m_carIdx !== data.m_header.m_playerCarIndex) {
     return;
   }
 
