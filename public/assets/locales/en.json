@@ -10,6 +10,7 @@
     "import_success": "File loaded.",
     "import_invalid": "Invalid file selected.",
     "stats": {
+      "track_name": "Strecke",
       "best_lap_time": "Best Lap Time",
       "average_time": "Average Lap Time",
       "possible_best_time": "Possible Best Time"

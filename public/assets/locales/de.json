@@ -10,6 +10,7 @@
     "import_success": "Datei wurde geladen.",
     "import_invalid": "Ungültige Datei ausgewählt.",
     "stats": {
+      "track_name": "Strecke",
       "best_lap_time": "Beste Rundenzeit",
       "average_time": "Durchschnittliche Rundenzeit",
       "possible_best_time": "Mögliche Bestzeit"
